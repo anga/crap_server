@@ -23,6 +23,10 @@ module CrapServer
     # Set to false if you want to manage the close of the connection.
     # Note that this require manual_read set to true.
     attr_accessor :auto_close_connection
+    # Logger used to log the app
+    attr_accessor :logger
+    # The log level used
+    attr_accessor :log_level
     def initialize
       @port = 7331
       @manual_read = false
@@ -30,6 +34,11 @@ module CrapServer
       @max_pending_connections = Socket::SOMAXCONN
       @method = :partial
       @auto_close_connection = true
+      if not @logger
+        @logger = Logger.new(STDOUT)
+        @logger.level = config.log_level
+      end
+      @log_level = :debug
     end
   end
 end

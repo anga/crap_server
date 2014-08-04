@@ -56,7 +56,7 @@ module CrapServer
       def connection_loop(remote_socket, addres_info, &block)
           # Work with the connection...
           if we_should_read?
-            reader = CrapServer::Helpers::SocketReader.new(remote_socket, config.read_method)
+            reader = CrapServer::Helpers::SocketReader.new(remote_socket, config.method)
             reader.address = addres_info
             reader.config = config
             reader.on_message(&block)
@@ -185,7 +185,7 @@ module CrapServer
       end
 
       def logger
-        @logger ||= Logger.new(STDOUT)
+        @logger ||= config.logger
       end
     end
   end

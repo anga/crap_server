@@ -18,9 +18,33 @@ Or install it yourself as:
 
 ## Basic Usage
 
-Crap::Application do |msg|
-  puts msg
-end
+    CrapServer::Application.run! do |data|
+        if data =~ /^GET/
+            write "Hello world"
+        elsif data =~ /^SET/
+            write "Setting value"
+        else
+            write "Something is wrong"
+        end
+    end
+
+## Configuring the app
+
+    CrapServer::Application.configure do |config|
+        config.port = 80
+        config.read_method = :partial
+        config.read_buffer_size = 1024 # 1K
+    end
+
+See all available options in lib/crap_server/configure.rb
+
+# Running our application
+
+ruby my_app.rb
+
+# Production ready?
+
+No. At the moment is only a thin server that abstract you from TCP sockets works.
 
 ## Contributing
 
