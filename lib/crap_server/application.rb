@@ -144,8 +144,6 @@ module CrapServer
           raise ConnectionError.new "Unable to bind #{config.port} port."
         end
 
-        puts "config: #{config.manual_read}"
-
         socket_ipv4.listen(config.max_pending_connections)
         # Tell to the Kernel that is ok to rebind the port if is in TIME_WAIT state (after close the connection
         # and the Kernel wait for client acknowledgement)
