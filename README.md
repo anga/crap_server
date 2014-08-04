@@ -1,6 +1,6 @@
 # CrapServer
 
-TODO: Write a gem description
+Really thin a non intuitive ruby server and framework. Made to be fast and ready for really heavy servers (not only http server).
 
 ## Installation
 
@@ -16,9 +16,11 @@ Or install it yourself as:
 
     $ gem install crap_server
 
-## Usage
+## Basic Usage
 
-TODO: Write usage instructions here
+Crap::Application do |msg|
+  puts msg
+end
 
 ## Contributing
 

@@ -19,5 +19,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_development_dependency "bundler", "~> 1.6"
-  spec.add_dependency "celluloid", '0.16.0.pre3'
+  # celluloid is for future use. Right now is not used
+  # spec.add_dependency "celluloid", '~> 0.15.2'
 end
