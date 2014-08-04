@@ -2,6 +2,11 @@
 
 Really thin a non intuitive ruby server and framework. Made to be fast and ready for really heavy servers (not only http server).
 
+# Another one?
+
+Yes. Why? because 2 main reasons. First, this is not a HTTP Web server, this is a generic server that can be used for any kind of TCP Socket server.
+Second and most important, because if funny :)
+
 ## Installation
 
 Add this line to your application's Gemfile:

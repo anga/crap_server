@@ -185,7 +185,11 @@ module CrapServer
       end
 
       def logger
-        @logger ||= config.logger
+        if not @logger
+          @logger = Logger.new(config.log_file)
+          @logger.level = @config.log_level
+        end
+        @logger
       end
     end
   end
