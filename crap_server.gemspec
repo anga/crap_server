@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ["Andres Joser Borek"]
   spec.email         = ["andres.b.dev@gmail.com"]
   spec.summary       = %q{Really thin a non intuitive ruby server and framework.}
-  spec.description   = %q{Really thin a non intuitive ruby server and framework. Made to be fast and ready for really heavy servers (not only http server).}
+  spec.description   = %q{Really thin and non intuitive ruby server and framework. Made to be fast and ready for really heavy servers (not only http server).}
   spec.homepage      = ""
   spec.license       = "MIT"
 
