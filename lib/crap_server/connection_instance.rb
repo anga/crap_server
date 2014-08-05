@@ -26,10 +26,14 @@ module CrapServer
 
     # Write to the client the given string
     def write(string)
-      if @method == :normal or @method == :partial
-        @socket.write(string)
-      elsif  @method == :non_blocking
-        @socket.write_nonblock(string)
+      begin
+        if @method == :normal or @method == :partial
+          @socket.write(string)
+        elsif  @method == :non_blocking
+          @socket.write_nonblock(string)
+        end
+      rescue IO::WaitWritable, Errno::EINTR
+        IO.select(nil, [@socket], nil, config.timeout)
       end
     end
 
@@ -50,7 +54,7 @@ module CrapServer
           @socket.read_nonblock(config.read_buffer_size)
         end
       rescue Errno::EAGAIN
-        IO.select([connection])
+        IO.select([connection],nil,nil, config.timeout)
         retry
       end
     end

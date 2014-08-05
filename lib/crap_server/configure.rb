@@ -27,6 +27,8 @@ module CrapServer
     attr_accessor :log_file
     # The log level used
     attr_accessor :log_level
+    # The timeout using when we use non-blocking method
+    attr_accessor :timeout
     def initialize
       @port = 7331
       @manual_read = false
@@ -36,6 +38,7 @@ module CrapServer
       @auto_close_connection = true
       @log_file = STDOUT
       @log_level = Logger::DEBUG
+      @timeout = nil # By default, no timeout. Used to allow persistent connections.
     end
   end
 end

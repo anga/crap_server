@@ -1,4 +1,5 @@
 # CrapServer
+[![Gem Version](https://badge.fury.io/rb/crap_server.svg)](http://badge.fury.io/rb/crap_server)
 [![Code Climate](https://codeclimate.com/github/anga/crap_server/badges/gpa.svg)](https://codeclimate.com/github/anga/crap_server)
 
 Really thin and non intuitive ruby server and framework. Made to be fast and ready for really heavy servers (not only http server).
