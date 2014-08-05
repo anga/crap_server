@@ -40,13 +40,18 @@ module CrapServer
     protected
     # Read the data from the socket
     def read_data
-      # Read the data from the socket
-      if @method == :normal
-        @socket.read(config.read_buffer_size)
-      elsif @method == :partial
-        @socket.readpartial(config.read_buffer_size)
-      elsif  @method == :non_blocking
-        @socket.read_nonblock(config.read_buffer_size)
+      begin
+        # Read the data from the socket
+        if @method == :normal
+          @socket.read(config.read_buffer_size)
+        elsif @method == :partial
+          @socket.readpartial(config.read_buffer_size)
+        elsif  @method == :non_blocking
+          @socket.read_nonblock(config.read_buffer_size)
+        end
+      rescue Errno::EAGAIN
+        IO.select([connection])
+        retry
       end
     end
   end

@@ -32,7 +32,7 @@ module CrapServer
       @manual_read = false
       @read_buffer_size = 1024*16 # 16K for read buffer
       @max_pending_connections = Socket::SOMAXCONN
-      @method = :partial
+      @method = :non_blocking
       @auto_close_connection = true
       @log_file = STDOUT
       @log_level = Logger::DEBUG

@@ -25,31 +25,39 @@ module CrapServer
       # Main method. This setup all the connections and make the logic of the app
       def run!(&block)
 
-        # Bup the maximum opened file to the maximum allowed by the system
-        Process.setrlimit(:NOFILE, Process.getrlimit(:NOFILE)[1])
+        begin
+          # Bup the maximum opened file to the maximum allowed by the system
+          Process.setrlimit(:NOFILE, Process.getrlimit(:NOFILE)[1])
 
-        # Start IPv4 and IPv6 connection for the current port
-        open_connections
+          # Start IPv4 and IPv6 connection for the current port
+          open_connections
 
 
-        # Some log info to the user :)
-        logger.info 'Initializing Crap Server'
-        logger.info "Listening 0.0.0.0:#{config.port}"
-        logger.debug "Maximum allowed waiting connections: #{Socket::SOMAXCONN}"
-        logger.debug "Maximum number of allowed connections: #{Process.getrlimit(:NOFILE)[1]}" # Same as maximum of opened files
-        logger.info ''
+          # Some log info to the user :)
+          logger.info 'Initializing Crap Server'
+          logger.info "Listening 0.0.0.0:#{config.port}"
+          logger.debug "Maximum allowed waiting connections: #{Socket::SOMAXCONN}"
+          logger.debug "Maximum number of allowed connections: #{Process.getrlimit(:NOFILE)[1]}" # Same as maximum of opened files
+          logger.info ''
 
-        # The main loop. Listening IPv4 and IPv6 connections
-        Socket.accept_loop([socket_ipv4, socket_ipv6]) do |remote_socket, address_info|
-          connection_loop(remote_socket, address_info, &block)
+          # The main loop. Listening IPv4 and IPv6 connections
+          Socket.accept_loop([socket_ipv4, socket_ipv6]) do |remote_socket, address_info|
+            connection_loop(remote_socket, address_info, &block)
+          end
+
+          close_connections
+
+        # If any kind of error happens, we MUST close the sockets
+        rescue => e
+          logger.error "Error: #{e.message}"
+          e.backtrace.each do |line|
+            logger.error line
+          end
+          close_connections
+
+        rescue Interrupt
+          close_connections
         end
-
-        close_connections
-      # If any kind of error happens, we MUST close the sockets
-      rescue => e
-        close_connections
-
-        raise e
       end
 
       protected
@@ -94,6 +102,8 @@ module CrapServer
 
       # Close all the sockets.
       def close_connections
+        logger.debug 'Closing all connections.'
+        logger.debug 'Bye!'
         # If any kind of error happens, we MUST close the sockets
         if socket_ipv4
           # Shuts down communication on all copies of the connection.
