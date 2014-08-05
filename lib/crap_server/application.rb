@@ -185,7 +185,7 @@ module CrapServer
       # Main configuration.
       # See Crap::Configure
       def config
-        @config
+        @config ||= CrapServer::Configure.new
       end
 
       def logger=(value)
@@ -195,7 +195,7 @@ module CrapServer
       def logger
         if not @logger
           @logger = Logger.new(config.log_file)
-          @logger.level = @config.log_level
+          @logger.level = config.log_level
         end
         @logger
       end

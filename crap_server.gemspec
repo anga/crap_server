@@ -6,10 +6,10 @@ require 'crap_server/version'
 Gem::Specification.new do |spec|
   spec.name          = 'crap_server'
   spec.version       = CrapServer::VERSION
-  spec.authors       = ['Andres Joser Borek']
+  spec.authors       = ['Andres Jose Borek']
   spec.email         = ['andres.b.dev@gmail.com']
-  spec.summary       = %q{Really thin a non intuitive ruby server and framework.}
-  spec.description   = %q{Really thin and non intuitive ruby server and framework. Made to be fast and ready for really heavy servers (not only http server).}
+  spec.summary       = %q{Really thin a non intuitive ruby server.}
+  spec.description   = %q{Really thin and non intuitive ruby server. Made to be fast and ready for really heavy servers (not only http server).}
   spec.homepage      = 'https://rubygems.org/gems/crap_server'
   spec.license       = 'MIT'
 
