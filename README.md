@@ -3,6 +3,7 @@
 [![Code Climate](https://codeclimate.com/github/anga/crap_server/badges/gpa.svg)](https://codeclimate.com/github/anga/crap_server)
 
 Really thin and non intuitive ruby server. Made to be fast and ready for really heavy servers (not only http server).
+Use Preforking and Evented pattern.
 
 # Another one?
 
@@ -35,14 +36,6 @@ Or install it yourself as:
         end
     end
 
-## Configuring the app
-
-    CrapServer::Application.configure do |config|
-        config.port = 80
-        config.read_method = :partial
-        config.read_buffer_size = 1024 # 1K
-    end
-
 See all available options in lib/crap_server/configure.rb
 
 # Running our application
@@ -51,7 +44,7 @@ ruby my_app.rb
 
 # Production ready?
 
-No. At the moment it's only a thin server that abstract you from TCP sockets works.
+No. Use it under your own risk. Right now, the interface can change.
 
 ## Contributing
 

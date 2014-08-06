@@ -22,6 +22,7 @@ module CrapServer
     attr_accessor :method
     # Set to false if you want to manage the close of the connection.
     # Note that this require manual_read set to true.
+    # DEPERCATED
     attr_accessor :auto_close_connection
     # The file to use as log
     attr_accessor :log_file
