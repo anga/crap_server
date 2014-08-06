@@ -3,7 +3,7 @@
 [![Code Climate](https://codeclimate.com/github/anga/crap_server/badges/gpa.svg)](https://codeclimate.com/github/anga/crap_server)
 
 Really thin and non intuitive ruby server. Made to be fast and ready for really heavy servers (not only http server).
-Use Preforking and Evented pattern.
+Use Preforking, Evented IO and a Thread Pool to handle each connection and prevent get stuck by some slow query.
 
 # Another one?
 
@@ -37,6 +37,9 @@ Or install it yourself as:
     end
 
 See all available options in lib/crap_server/configure.rb
+
+## Pool size
+By default, the pool size run 10 threads per core. You can change it with the pool_size config option.
 
 # Running our application
 

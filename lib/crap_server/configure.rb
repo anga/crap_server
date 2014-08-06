@@ -29,7 +29,10 @@ module CrapServer
     # The log level used
     attr_accessor :log_level
     # The timeout using when we use non-blocking method
+    # NOT USED
     attr_accessor :timeout
+    # Thread pool size. 10 per cor by default
+    attr_accessor :pool_size
     def initialize
       @port = 7331
       @manual_read = false
@@ -40,6 +43,7 @@ module CrapServer
       @log_file = STDOUT
       @log_level = Logger::DEBUG
       @timeout = nil # By default, no timeout. Used to allow persistent connections.
+      @pool_size = 10
     end
   end
 end

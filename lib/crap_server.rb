@@ -1,5 +1,6 @@
 require 'crap_server/version'
 require 'crap_server/configure'
+require 'crap_server/thread_pool'
 require 'crap_server/forker'
 require 'crap_server/connection_handler'
 require 'crap_server/connection_instance'

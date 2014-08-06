@@ -45,8 +45,8 @@ module CrapServer
     def spawn_child
       fork do
         begin
-          handler = CrapServer::ConnectionHandler.new @sockets
-          handler.handle &@block_proc
+          pool = CrapServer::ThreadPool.new @sockets
+          pool.run &@block_proc
         rescue Interrupt
         end
       end
