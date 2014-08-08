@@ -18,6 +18,7 @@ module CrapServer
     end
 
     def remove_to_write(io)
+      @buffer ||= {}
       @to_write.delete io.fileno
       @buffer.delete io.fileno
     end
@@ -80,6 +81,7 @@ module CrapServer
     def close(io)
       remove_to_read io
       remove_to_write io
+      @closeaw ||= {}
       @closeaw.delete io.fileno
       io.close
     end

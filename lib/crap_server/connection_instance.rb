@@ -23,7 +23,6 @@ module CrapServer
       else
         self.call(data, socket, address)
       end
-      @socket.flush
     end
 
     # Write to the client the given string
