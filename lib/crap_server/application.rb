@@ -22,6 +22,10 @@ module CrapServer
         block.yield @config
       end
 
+      def per_process(&block)
+        @per_process_block = block
+      end
+
       # Main method. This setup all the connections and make the logic of the app
       def run!(&block)
         begin
@@ -62,6 +66,10 @@ module CrapServer
       end
 
       protected
+
+      def per_process_block
+        @per_process_block
+      end
 
       # Open TCP connection (IPv4 and IPv6)
       def open_connections
