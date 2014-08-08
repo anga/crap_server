@@ -25,6 +25,7 @@ module CrapServer
       # Main method. This setup all the connections and make the logic of the app
       def run!(&block)
         begin
+          logger.info 'Initializing Crap Server'
           # Bup the maximum opened file to the maximum allowed by the system
           Process.setrlimit(:NOFILE, Process.getrlimit(:NOFILE)[1])
 
@@ -33,10 +34,11 @@ module CrapServer
 
 
           # Some log info to the user :)
-          logger.info 'Initializing Crap Server'
           logger.info "Listening 0.0.0.0:#{config.port}"
           logger.debug "Maximum allowed waiting connections: #{Socket::SOMAXCONN}"
           logger.debug "Maximum number of allowed connections: #{Process.getrlimit(:NOFILE)[1]}" # Same as maximum of opened files
+          logger.debug "Number of threads per core: #{config.pool_size}"
+          logger.info 'Everything is ready. Have fun!'
           logger.info ''
 
           # Prefork and handle the connections in each process.
@@ -44,19 +46,18 @@ module CrapServer
           # Run loop. (basically, waiting until Ctrl+C)
           forker.run &block
 
-          # NOTE: I think this line never will be executed
-          close_connections
-
         # If any kind of error happens, we MUST close the sockets
         rescue => e
           logger.error "Error: #{e.message}"
           e.backtrace.each do |line|
             logger.error line
           end
-          close_connections
+        # We don't need to close the socket, because are closed automatically by ruby
 
         rescue Interrupt
-          close_connections
+          # We don't need to close the socket, because are closed automatically by ruby
+          # Leaved in black only to prevent error backtrace.
+          # The process are killed by CrapServer::Forker
         end
       end
 
@@ -66,25 +67,6 @@ module CrapServer
       def open_connections
         start_ipv4_socket
         start_ipv6_socket
-      end
-
-      # Close all the sockets.
-      def close_connections
-        logger.debug 'Closing all connections.'
-        logger.debug 'Bye!'
-        # If any kind of error happens, we MUST close the sockets
-        if socket_ipv4
-          # Shuts down communication on all copies of the connection.
-          # socket_ipv4.shutdown
-          # socket_ipv4.close
-        end
-
-        if socket_ipv6
-          # Shuts down communication on all copies of the connection.
-          # socket_ipv6.shutdown
-          # socket_ipv6.close
-        end
-        # TODO: Close all opened sockets connections from other threads and processes
       end
 
       def start_ipv6_socket
@@ -145,11 +127,6 @@ module CrapServer
 
       def socket_ipv4=(value)
         @socket4 = value
-      end
-
-      # TCP Socket reader
-      def reader(socket)
-
       end
 
       # Main configuration.

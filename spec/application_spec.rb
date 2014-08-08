@@ -9,6 +9,7 @@ describe CrapServer::Application do
     CrapServer::Application.class_eval do
       @logger = Dummy
     end
+    allow(CrapServer::Forker).to receive(:run).and_return(true)
   end
   context 'run!' do
 
@@ -23,6 +24,7 @@ describe CrapServer::Application do
         allow(Socket).to receive(:new) do |*args|
           Dummy
         end
+        allow_any_instance_of(CrapServer::Forker).to receive(:run).and_return(true)
       end
 
       it 'should bind IPv4 and IPv6' do
@@ -52,7 +54,13 @@ describe CrapServer::Application do
         CrapServer::Application.run! do
         end
       end
-    end
 
+      it 'should execute the forker' do
+        expect_any_instance_of(CrapServer::Forker).to receive(:run).and_return(true)
+        CrapServer::Application.run! do
+        end
+      end
+    end
   end
+
 end

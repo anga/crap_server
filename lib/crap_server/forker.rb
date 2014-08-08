@@ -10,24 +10,20 @@ module CrapServer
     def run(&block)
       begin
         @block_proc = block
-        child_pids = []
+        @child_pids = []
         processor_count.times do
-          child_pids << spawn_child
+          @child_pids << spawn_child
         end
 
-        # We take care of our children. If someone kill one, me made another one.
-        # PS: Is a hard work :P
-        loop do
-          pid = Process.wait
-          child_pids.delete(pid)
-          child_pids << spawn_child
-        end
+        check_children
       # If someone kill us, we kill our children. Yes, is sad, but we must do it :'(
-      rescue Interrupt
-        child_pids.each do |cpid|
+      rescue ::Exception # If any kind of error happens, we must kill our children
+        @child_pids.each do |cpid|
           begin
             # We send Ctrl+C to the process
             Process.kill(:INT, cpid)
+          # If the process in not running or because any reason we have no privileges to kill him
+          # We just only don't care. In any case, we can do nothing
           rescue Errno::ESRCH
           end
         end
@@ -36,12 +32,12 @@ module CrapServer
           socket.shutdown
           socket.close
         end
-
       end
     end
 
     protected
 
+    # Spawn a new Thread Pool in each process
     def spawn_child
       fork do
         begin
@@ -49,6 +45,17 @@ module CrapServer
           pool.run &@block_proc
         rescue Interrupt
         end
+      end
+    end
+
+    # The main loop that check if any process is killed. If one of them get killed, we spawn another one.
+    def check_children
+      # We take care of our children. If someone kill one, me made another one.
+      # PS: Is a hard work :P
+      loop do
+        pid = Process.wait
+        @child_pids.delete(pid)
+        @child_pids << spawn_child
       end
     end
 
