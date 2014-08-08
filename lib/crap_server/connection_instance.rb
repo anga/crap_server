@@ -5,7 +5,6 @@ module CrapServer
     attr_accessor :socket
     attr_accessor :address
     attr_accessor :config
-    attr_accessor :method
     attr_accessor :handler
     def initialize; end
 
@@ -15,14 +14,7 @@ module CrapServer
       undef :call if self.respond_to? :call
       # Define the new method to bind the block with this class.
       self.class.send :define_method, :call, &block
-      # Running the code depending of the number of args
-      if block.parameters.size == 1
-        self.call(data)
-      elsif block.parameters.size == 2
-        self.call(data, socket)
-      else
-        self.call(data, socket, address)
-      end
+      self.call(data)
     end
 
     # Write to the client the given string
@@ -41,7 +33,7 @@ module CrapServer
 
     # Give access to logger class to the user
     def logger
-      @config.logger
+      CrapServer::Application.send(:logger)
     end
   end
 end

@@ -45,6 +45,10 @@ By default, the pool size run 10 threads per core. You can change it with the po
 
 ruby my_app.rb
 
+# More info.
+
+More info in the [wiki](https://github.com/anga/crap_server/wiki) of the gem. 
+
 # Production ready?
 
 No. Use it under your own risk. Right now, the interface can change.

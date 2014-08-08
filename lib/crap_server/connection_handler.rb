@@ -93,7 +93,6 @@ module CrapServer
         instance.socket = remote_socket
         instance.config = config
         instance.address = address_info
-        instance.send(:method=, config.method)
         instance.handler = self
         instance.run data, &block
       end
@@ -119,6 +118,8 @@ module CrapServer
             begin
               _, data = socket, socket.read_nonblock(config.read_buffer_size)
               yield data, socket, address(socket)
+              # We close the connection if we auto_close_connection is true and the user didn't write in the buffer.
+              close socket if config.auto_close_connection && buffer(socket).nil?
             rescue Errno::EAGAIN
             rescue EOFError
               remove_to_read socket
