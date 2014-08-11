@@ -80,45 +80,31 @@ module CrapServer
       def start_ipv6_socket
         # :INET6 is to open an IPv6 connection
         # :STREAM is to open a TCP socket
-        # After this line, the app is not yet ready to work, we only opened a socket
-        socket_ipv6 = Socket.new(:INET6, :STREAM)
-
-        begin
-          # Now, bind the port.
-          # ::1 is loopback for IPv6
-          socket_ipv6.bind(Socket.pack_sockaddr_in(config.port, '::1'))
-        rescue Errno::EADDRINUSE
-          socket_ipv6.close
-          raise ConnectionError.new "Unable to bind #{config.port} port."
-        end
-        socket_ipv6.listen(config.max_pending_connections)
-        # Tell to the Kernel that is ok to rebind the port if is in TIME_WAIT state (after close the connection
-        # and the Kernel wait for client acknowledgement)
-        socket_ipv6.setsockopt(:SOCKET, :REUSEADDR, true)
-
-        @socket6 = socket_ipv6
+        @socket6 = start_socket :INET6, :STREAM, '::1'
       end
 
       def start_ipv4_socket
-        # :INET6 is to open an IPv6 connection
+        # :INET is to open an IPv4 connection
         # :STREAM is to open a TCP socket
-        # After this line, the app is not yet ready to work, we only opened a socket
-        socket_ipv4 = Socket.new(:INET, :STREAM)
+        @socket4 = start_socket :INET, :STREAM, '0.0.0.0'
+      end
+
+      def start_socket(version, type, loopback)
+        socket = Socket.new(version, type)
 
         begin
           # Now, bind the port.
-          socket_ipv4.bind(Socket.pack_sockaddr_in(config.port, '0.0.0.0'))
+          socket.bind(Socket.pack_sockaddr_in(config.port, loopback))
         rescue Errno::EADDRINUSE
-          socket_ipv4.close
+          socket.close
           raise ConnectionError.new "Unable to bind #{config.port} port."
         end
 
-        socket_ipv4.listen(config.max_pending_connections)
+        socket.listen(config.max_pending_connections)
         # Tell to the Kernel that is ok to rebind the port if is in TIME_WAIT state (after close the connection
         # and the Kernel wait for client acknowledgement)
-        socket_ipv4.setsockopt(:SOCKET, :REUSEADDR, true)
-
-        @socket4 = socket_ipv4
+        socket.setsockopt(:SOCKET, :REUSEADDR, true)
+        socket
       end
 
       def socket_ipv6

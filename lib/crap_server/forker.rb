@@ -41,7 +41,6 @@ module CrapServer
     def spawn_child
       fork do
         begin
-
           CrapServer::Application.send(:per_process_block).call if not CrapServer::Application.send(:per_process_block).nil?
           pool = CrapServer::ThreadPool.new @sockets
           pool.run &@block_proc

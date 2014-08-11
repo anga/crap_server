@@ -101,59 +101,75 @@ module CrapServer
     protected
 
     # Evented loop (Reactor pattern)
-    def accept_loop
+    def accept_loop(&block)
       loop {
         @readables,  @writables = IO.select(to_read, to_write)
 
-        @readables.each do |socket|
-          if @sockets.include? socket
-            io, addr = socket.accept
-            set_address io, addr
-            set_close_after_write io if config.auto_close_connection
-            # Disabling Nagle's algorithm. Is fucking slow :P
-            io.setsockopt(Socket::IPPROTO_TCP, Socket::TCP_NODELAY, 1)
-            # We add him to the read queue
-            add_to_read io
-          else
-            begin
-              _, data = socket, socket.read_nonblock(config.read_buffer_size)
-              yield data, socket, address(socket)
-              # We close the connection if we auto_close_connection is true and the user didn't write in the buffer.
-              close socket if config.auto_close_connection && buffer(socket).nil?
-            rescue Errno::EAGAIN
-            rescue EOFError
-              remove_to_read socket
-            end
-          end
-        end
-
-        @writables.each do |socket|
-          begin
-            string = buffer socket
-            bytes = socket.write_nonblock string
-            string.slice! 0, bytes
-            if string.empty?
-              # If we don't have more data to send to the client
-              if close_after_write socket
-                close socket
-              else
-                remove_to_write socket
-              end
-            else
-              set_buffer socket, string
-              remove_to_read socket
-            end
-          # If the client close the connection, we remove is from read and from write
-          rescue Errno::ECONNRESET, Errno::EPIPE
-            if close_after_write socket
-              close socket
-            end
-          end
-        end
+        process_readables &block
+        process_writables
       }
     end
 
     protected
+
+    def process_readables(&block)
+      @readables.each do |socket|
+        if @sockets.include? socket
+          accept_connection socket
+        else
+          begin
+            read_and_process_data socket, &block
+          rescue Errno::EAGAIN
+          rescue EOFError
+            remove_to_read socket
+          end
+        end
+      end
+    end
+
+    def process_writables
+      @writables.each do |socket|
+        begin
+          string = buffer socket
+          bytes = socket.write_nonblock string
+          string.slice! 0, bytes
+          if string.empty?
+            # If we don't have more data to send to the client
+            if close_after_write socket
+              close socket
+            else
+              remove_to_write socket
+            end
+          else
+            set_buffer socket, string
+            remove_to_read socket
+          end
+            # If the client close the connection, we remove is from read and from write
+        rescue Errno::ECONNRESET, Errno::EPIPE
+          if close_after_write socket
+            close socket
+          end
+        end
+      end
+    end
+
+    def accept_connection(socket)
+      io, addr = socket.accept
+      set_address io, addr
+      set_close_after_write io if config.auto_close_connection
+      # Disabling Nagle's algorithm. Is fucking slow :P
+      io.setsockopt(Socket::IPPROTO_TCP, Socket::TCP_NODELAY, 1)
+      # We add him to the read queue
+      add_to_read io
+    end
+
+    def read_and_process_data(socket, &block)
+      _, data = socket, socket.read_nonblock(config.read_buffer_size)
+      block.call data, socket, address(socket)
+      # We close the connection if we auto_close_connection is true and the user didn't write in the buffer.
+      close socket if config.auto_close_connection && buffer(socket).nil?
+    end
+
     def config
       CrapServer::Application.send(:config)
     end
